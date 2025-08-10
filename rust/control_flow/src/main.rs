@@ -1,6 +1,6 @@
 fn main() {
-    let x = 900;
-    let y = if x > 500 { "BIG" } else { "SMALL" };
+    // let x = 900;
+    // let y = if x > 500 { "BIG" } else { "SMALL" };
 
     /*
         if's are expressions, but I don't know why there is no difference wether it is ended with
@@ -8,10 +8,33 @@ fn main() {
         case of if, the only case it needs an ending semicolon is when it is preceded by a let
         statement on the left of the assignment. Otherwise, it does not need a semicolon
     */
-    let arr = [1, 2, 3, 4, 5];
+    // let arr = [1, 2, 3, 4, 5];
+    //
+    // for num in arr {
+    //     println!("{}", num)
+    // }
 
-    for num in arr {
-        println!("{}", num)
+    let mut var1 = 0;
+    let mut var2 = 0;
+
+    'loop_name: loop {
+        println!("{var1}");
+
+        loop {
+            println!("{var2}");
+            var2 += 1;
+
+            if var1 > 5 {
+                break 'loop_name;
+            }
+
+            if var2 > 5 {
+                continue 'loop_name;
+            }
+        }
+
+        var1 += 1;
+        var2 = 0;
     }
 
     // let l = if x > 500 {
@@ -20,5 +43,5 @@ fn main() {
     //     ()
     // };
 
-    println!("{y}");
+    // println!("{y}");
 }
