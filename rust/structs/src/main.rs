@@ -1,3 +1,9 @@
+// A unit struct (useful for generics)
+struct Unit;
+
+// A tuple struct (which is in fact a named tuple)
+struct Pair(i32, f32);
+
 #[derive(Debug)]
 struct User {
     username: String,
@@ -32,6 +38,11 @@ impl Rectangle {
 }
 
 fn main() {
+    let pair = Pair(-23, 10.3);
+    println!("{}, {}", pair.0, pair.1);
+
+    let _unit = Unit;
+
     let user: User = User {
         username: String::from("username"),
         is_active: true,
