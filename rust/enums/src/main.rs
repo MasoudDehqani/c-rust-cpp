@@ -49,15 +49,29 @@ fn main() {
     }
 
     println!("{:?}", v4);
-    println!("{:?}", v6);
+    println!("{v6:?}");
 
     let ip_addr_v4 = IpAddr::V4(String::from("172.0.0.1"));
     let ip_addr_v6 = IpAddr::V6(String::from("20a3:5404:50d4:3742:6752:62c7:d4e2:471f"));
-    println!("{:?}", ip_addr_v4);
+    println!("{ip_addr_v4:?}");
 
     if let IpAddr::V6(ref addr) = ip_addr_v6 {
         println!("{addr}");
+    } else {
+        println!("J")
     }
+
+    if let IpAddr::V6(addr) = &ip_addr_v6
+        && *addr == String::from("20a3:5404:50d4:3742:6752:62c7:d4e2:471f")
+    {
+        println!("{addr}");
+    }
+
+    let IpAddr::V6(addr) = &ip_addr_v6 else {
+        return println!("NONE");
+    };
+
+    println!("ADDR: {addr}");
 
     match ip_addr_v6 {
         IpAddr::V4(addr) => {

@@ -47,6 +47,7 @@ fn main() {
     } = &user;
 
     println!("{:#?}", user);
+    println!("{user:#?}");
     println!("{username}, {is_active}, {login_count}");
 
     let rect: Rectangle = Rectangle {
