@@ -1,3 +1,4 @@
+use generic_trait_lifetime::Summary;
 use std::cmp::PartialOrd;
 
 #[derive(Debug)]
@@ -30,10 +31,6 @@ enum Variants<T> {
     Variant2,
 }
 
-pub trait Summary {
-    fn summary(&self) -> String;
-}
-
 struct NewsArticle {
     headline: String,
     author: String,
@@ -43,6 +40,24 @@ struct NewsArticle {
 impl Summary for NewsArticle {
     fn summary(&self) -> String {
         format!("{} by {}", self.headline, self.author)
+    }
+    fn summary_with_default(&self) -> String {
+        format!("Bishin binim baaa {}", self.author)
+    }
+}
+
+struct SocialPost {
+    username: String,
+    content: String,
+    repost: bool,
+}
+
+impl Summary for SocialPost {
+    fn summary(&self) -> String {
+        format!(
+            "{} by {} and is reposted: {}",
+            &self.content, &self.username, &self.repost
+        )
     }
 }
 
@@ -73,6 +88,17 @@ fn main() {
         "{sum}, {1}, {0}, {2}",
         article.headline, article.author, article.content
     );
+    println!("{}", article.summary_with_default());
+
+    let social_post = SocialPost {
+        username: String::from("post username"),
+        content: String::from("post content"),
+        repost: true,
+    };
+
+    println!("{}", social_post.summary());
+    println!("{}", social_post.summary_with_default());
+    println!("{}", social_post.summary_from_summary());
 }
 
 fn largest<T: PartialOrd>(lst: &[T]) -> &T {
