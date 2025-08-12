@@ -1,0 +1,88 @@
+use std::cmp::PartialOrd;
+
+#[derive(Debug)]
+struct Point<T, U> {
+    x: T,
+    y: U,
+}
+
+impl<T, U> Point<T, U> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+
+    fn mixup<X2, Y2>(self, other: Point<X2, Y2>) -> Point<T, Y2> {
+        Point {
+            x: self.x,
+            y: other.y,
+        }
+    }
+}
+
+impl Point<f64, f64> {
+    fn distance_of_x_and_y(&self) -> f64 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+enum Variants<T> {
+    Variant1(T),
+    Variant2,
+}
+
+pub trait Summary {
+    fn summary(&self) -> String;
+}
+
+struct NewsArticle {
+    headline: String,
+    author: String,
+    content: String,
+}
+
+impl Summary for NewsArticle {
+    fn summary(&self) -> String {
+        format!("{} by {}", self.headline, self.author)
+    }
+}
+
+fn main() {
+    let l = largest(&[1, 0, 25, 112, 7]);
+    let p = Point { x: 2, y: 2.2 };
+    let p2 = Point { x: 2.2, y: 3.2 };
+    let p3 = Point { x: 5.3, y: 1.1 };
+    let p4 = Point { x: 9.1, y: 2.4 };
+    let _p5 = p3.mixup(p4);
+    let _x = p.x();
+    let dis = p2.distance_of_x_and_y();
+    let _v = Variants::Variant1(Point { x: 12.2, y: 1 });
+    let _v2: Variants<Point<f64, i32>> = Variants::Variant2;
+
+    println!("{l:?}");
+    println!("{p:?}, {}, {}", p.x, p.y);
+    println!("{dis}");
+
+    let article = NewsArticle {
+        headline: String::from("headline"),
+        author: String::from("author"),
+        content: String::new(),
+    };
+
+    let sum = article.summary();
+    println!(
+        "{sum}, {1}, {0}, {2}",
+        article.headline, article.author, article.content
+    );
+}
+
+fn largest<T: PartialOrd>(lst: &[T]) -> &T {
+    let mut largest = &lst[0];
+
+    for l in lst {
+        if l > largest {
+            largest = l;
+        }
+    }
+
+    largest
+}
