@@ -59,7 +59,7 @@ fn main() {
         println!("4. See all tasks");
 
         while !valid_inputs.contains(&user_action_input) {
-            user_action_input = String::new();
+            reset_user_input(&mut user_action_input);
             stdin()
                 .read_line(&mut user_action_input)
                 .expect("Failed to read line");
@@ -70,30 +70,36 @@ fn main() {
         }
 
         match user_action_input.as_str() {
-            "1" => {
-                let mut title = String::new();
-                let mut desc = String::new();
-                println!("Enter title:");
-                stdin().read_line(&mut title).expect("Failed to read");
-                println!("Enter description:");
-                stdin().read_line(&mut desc).expect("Failed to read");
-
-                let next_id = tasks
-                    .last()
-                    .map(|t| t.id.clone())
-                    .unwrap_or("1".to_string());
-
-                let new_task = Task::new(next_id, title, desc);
-                tasks.push(new_task);
-                user_action_input = String::new();
-            }
+            "1" => add_a_task(&mut tasks, &mut user_action_input),
             "2" => println!("Deleting a task"),
             "3" => println!("Editing a task"),
             "4" => {
                 tasks.iter().for_each(|t| println!("{}", t));
-                user_action_input = String::new();
+                reset_user_input(&mut user_action_input);
             }
             _ => println!("Invalid input"),
         };
     }
+}
+
+fn reset_user_input(input: &mut String) {
+    *input = String::new();
+}
+
+fn add_a_task(tasks: &mut Vec<Task>, user_action_input: &mut String) {
+    let mut title = String::new();
+    let mut desc = String::new();
+    println!("Enter title:");
+    stdin().read_line(&mut title).expect("Failed to read");
+    println!("Enter description:");
+    stdin().read_line(&mut desc).expect("Failed to read");
+
+    let next_id = tasks
+        .last()
+        .map(|t| t.id.clone())
+        .unwrap_or("1".to_string());
+
+    let new_task = Task::new(next_id, title, desc);
+    tasks.push(new_task);
+    reset_user_input(user_action_input);
 }
