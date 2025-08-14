@@ -1,4 +1,4 @@
-use std::io::{Read, stdin};
+use std::{fmt, io::stdin};
 
 enum TaskStatus {
     Done,
@@ -14,13 +14,19 @@ struct Task {
 }
 
 impl Task {
-    fn new(title: String, description: String) -> Self {
+    fn new(id: String, title: String, description: String) -> Self {
         Self {
-            id: String::from("1"),
+            id,
             title,
             description,
             status: TaskStatus::Active,
         }
+    }
+}
+
+impl fmt::Display for Task {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {})", self.title, self.description)
     }
 }
 
@@ -34,13 +40,7 @@ enum UserAction {
 }
 
 fn main() {
-    let tasks: Vec<Task> = Vec::new();
-
-    // println!("What do you want to do?");
-    // println!("1. Add new a task");
-    // println!("2. Delete an existing task");
-    // println!("3. Edit an existing task");
-    // println!("4. See all tasks");
+    let mut tasks: Vec<Task> = Vec::new();
 
     let mut user_action_input = String::new();
 
@@ -51,28 +51,49 @@ fn main() {
         "4".to_string(),
     ];
 
-    println!("What do you want to do?");
-    println!("1. Add new a task");
-    println!("2. Delete an existing task");
-    println!("3. Edit an existing task");
-    println!("4. See all tasks");
+    loop {
+        println!("What do you want to do?");
+        println!("1. Add new a task");
+        println!("2. Delete an existing task");
+        println!("3. Edit an existing task");
+        println!("4. See all tasks");
 
-    while !valid_inputs.contains(&user_action_input) {
-        user_action_input = String::new();
-        stdin()
-            .read_line(&mut user_action_input)
-            .expect("Failed to read line");
-        user_action_input.pop();
-        if !valid_inputs.contains(&user_action_input) {
-            println!("Enter an option between 1 and 4");
+        while !valid_inputs.contains(&user_action_input) {
+            user_action_input = String::new();
+            stdin()
+                .read_line(&mut user_action_input)
+                .expect("Failed to read line");
+            user_action_input.pop();
+            if !valid_inputs.contains(&user_action_input) {
+                println!("Enter an option between 1 and 4");
+            }
         }
-    }
 
-    match user_action_input.as_str() {
-        "1" => println!("Adding a new task"),
-        "2" => println!("Deleting a task"),
-        "3" => println!("Editing a task"),
-        "4" => println!("Listing all tasks"),
-        _ => println!("Invalid input"),
-    };
+        match user_action_input.as_str() {
+            "1" => {
+                let mut title = String::new();
+                let mut desc = String::new();
+                println!("Enter title:");
+                stdin().read_line(&mut title).expect("Failed to read");
+                println!("Enter description:");
+                stdin().read_line(&mut desc).expect("Failed to read");
+
+                let next_id = tasks
+                    .last()
+                    .map(|t| t.id.clone())
+                    .unwrap_or("1".to_string());
+
+                let new_task = Task::new(next_id, title, desc);
+                tasks.push(new_task);
+                user_action_input = String::new();
+            }
+            "2" => println!("Deleting a task"),
+            "3" => println!("Editing a task"),
+            "4" => {
+                tasks.iter().for_each(|t| println!("{}", t));
+                user_action_input = String::new();
+            }
+            _ => println!("Invalid input"),
+        };
+    }
 }
