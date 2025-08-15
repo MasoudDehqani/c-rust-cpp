@@ -6,6 +6,16 @@ enum TaskStatus {
     Active,
 }
 
+impl TaskStatus {
+    fn to_string(&self) -> String {
+        match self {
+            TaskStatus::Done => "Done".to_string(),
+            TaskStatus::Postponed => "Postponed".to_string(),
+            TaskStatus::Active => "Active".to_string(),
+        }
+    }
+}
+
 struct Task {
     id: String,
     title: String,
@@ -26,7 +36,13 @@ impl Task {
 
 impl fmt::Display for Task {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "({}, {})", self.title, self.description)
+        write!(
+            f,
+            "title: {}, description: {}, status: {}",
+            self.title.trim(),
+            self.description.trim(),
+            self.status.to_string()
+        )
     }
 }
 
@@ -42,8 +58,6 @@ enum UserAction {
 fn main() {
     let mut tasks: Vec<Task> = Vec::new();
 
-    let mut user_action_input = String::new();
-
     let valid_inputs = [
         "1".to_string(),
         "2".to_string(),
@@ -58,69 +72,49 @@ fn main() {
         println!("3. Edit an existing task");
         println!("4. See all tasks");
 
-        while !valid_inputs.contains(&user_action_input) {
-            reset_user_input(&mut user_action_input);
-            stdin()
-                .read_line(&mut user_action_input)
-                .expect("Failed to read line");
-            user_action_input.pop();
-            if !valid_inputs.contains(&user_action_input) {
+        let user_input = get_user_input();
+
+        while !valid_inputs.contains(&user_input) {
+            if !valid_inputs.contains(&user_input) {
                 println!("Enter an option between 1 and 4");
             }
         }
 
-        match user_action_input.as_str() {
-            "1" => add_a_task(&mut tasks, &mut user_action_input),
-            "2" => {
-                delete_a_task(&mut tasks);
-                reset_user_input(&mut user_action_input);
-            }
+        match user_input.as_str() {
+            "1" => add_a_task(&mut tasks),
+            "2" => delete_a_task(&mut tasks),
             "3" => println!("Editing a task"),
-            "4" => {
-                tasks.iter().for_each(|t| println!("{}", t));
-                reset_user_input(&mut user_action_input);
-            }
+            "4" => list_tasks(&tasks),
             _ => println!("Invalid input"),
         };
     }
 }
 
-fn reset_user_input(input: &mut String) {
-    *input = String::new();
-}
-
-fn add_a_task(tasks: &mut Vec<Task>, user_action_input: &mut String) {
-    let mut title = String::new();
-    let mut desc = String::new();
+fn add_a_task(tasks: &mut Vec<Task>) {
     println!("Enter title:");
-    stdin().read_line(&mut title).expect("Failed to read");
+    let title = get_user_input();
     println!("Enter description:");
-    stdin().read_line(&mut desc).expect("Failed to read");
+    let description = get_user_input();
 
-    let next_id = tasks
-        .last()
-        .map(|t| t.id.clone())
-        .unwrap_or("1".to_string());
+    let next_id = (tasks.len() + 1).to_string();
 
-    let new_task = Task::new(next_id, title, desc);
+    let new_task = Task::new(next_id, title, description);
     tasks.push(new_task);
-    reset_user_input(user_action_input);
+    println!("Task added successfully");
 }
 
 fn delete_a_task(tasks: &mut Vec<Task>) {
-    tasks.iter().enumerate().for_each(|(i, t)| {
-        println!("{}. {}", i + 1, t.title);
-    });
+    tasks
+        .iter()
+        .enumerate()
+        .for_each(|(i, Task { title, .. })| {
+            println!("{}. {}", i + 1, title);
+        });
 
     println!("Enter the number of the task to delete:");
-    let mut user_selection = String::new();
+    let user_selection = get_user_input();
     let tasks_len = tasks.len();
 
-    stdin()
-        .read_line(&mut user_selection)
-        .expect("Failed to read");
-
-    user_selection.pop();
     let user_selection: usize = user_selection.parse().unwrap_or(0);
 
     if !(1..=tasks_len).contains(&user_selection) {
@@ -129,4 +123,23 @@ fn delete_a_task(tasks: &mut Vec<Task>) {
     }
 
     (*tasks).remove(user_selection - 1);
+}
+
+fn list_tasks(tasks: &Vec<Task>) {
+    if tasks.is_empty() {
+        println!("You haven't added any task yet");
+        return;
+    }
+
+    tasks.iter().for_each(|t| println!("{}", t));
+}
+
+fn get_user_input() -> String {
+    let mut input = String::new();
+    stdin()
+        .read_line(&mut input)
+        .expect("Failed to read your option");
+    input = input.trim().to_string();
+
+    input
 }
