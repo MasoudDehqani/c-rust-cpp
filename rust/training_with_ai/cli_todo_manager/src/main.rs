@@ -112,21 +112,19 @@ fn delete_a_task(tasks: &mut Vec<Task>) {
         .iter()
         .enumerate()
         .for_each(|(i, Task { title, .. })| {
-            println!("{}. {}", i + 1, title);
+            println!("{}. {}", i + 1, title.trim());
         });
 
     println!("Enter the number of the task to delete:");
     let user_selection = get_user_input();
-    let tasks_len = tasks.len();
 
-    let user_selection: usize = user_selection.parse().unwrap_or(0);
-
-    if !(1..=tasks_len).contains(&user_selection) {
-        println!("Not a task number");
-        return;
+    match user_selection.parse::<usize>() {
+        Ok(num) if (1..=tasks.len()).contains(&num) => {
+            let removed_task = (*tasks).remove(num - 1);
+            println!("Successfully deleted: {}", removed_task.title.trim());
+        }
+        _ => println!("{user_selection} Not a valid task number"),
     }
-
-    (*tasks).remove(user_selection - 1);
 }
 
 fn list_tasks(tasks: &Vec<Task>) {
