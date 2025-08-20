@@ -32,7 +32,12 @@
     - Rust macros are a way to write code that generates code to extend Rust syntax
 
     - compiling and running are separate steps in Rust
-    - Rust is an ahead-of-time compiled language
+    - Rust is an ahead-of-time (AOT) compiled language
+    - Being AOT means you always get a standalone machine-native binary and no interpreter
+    or JIT (just-in-time compilation) involved at runtime. The binary is self contained
+    except for OS-level libraries
+
+    - warm-up phase for JIT
 
     - cargo is Rust's build system and package manager
     - dependencies -> libraries that your code needs
