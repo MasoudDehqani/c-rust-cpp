@@ -32,6 +32,29 @@
     - println!("{expression:?}");
     - println!("{expression:#?}");
     - println!("{0}, {1}", expression1, expression2);
+
+    - binary crate -> executable
+    - library crate -> intended to use by others, cannot be executed on its own
+
+    - semantic versioning (SemVer)
+
+    - registry -> a copy of data from crates.io ???
+    - updating the registry ???
+
+    - reproducible builds with cargo.lock
+    - cargo.lock file somehow locks the versions of dependencies
+    - the project remains at versions indicated at cargo.lock until explicitly
+    upgraded
+    - the command 'cargo update' will ignore the cargo.lock and upgrade versions
+    - cargo follows SemVer semantic versioning
+    - for example specifying 0.8.5 for a crate (which is a shorthand for ^0.8.5)
+    and then run 'cargo update' will upgrade the package to a version higher than
+    0.8.5 but below 0.9.0
+    - to upgrade the package to 0.9.x series, the cargo.toml file should be
+    changed and the version of the package in the [dependencies] section should
+    be changed
+
+    - projects can be assembled from a number of packages
 */
 
 use colored::{Color, Colorize};
