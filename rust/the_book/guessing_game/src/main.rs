@@ -55,6 +55,17 @@
     be changed
 
     - projects can be assembled from a number of packages
+
+    - being local to the current thread of execution ???
+
+    - 'cargo doc --open' command will build documentation provided by all the
+    project's dependencies locally and open it into browser
+
+    - a match expression is made up of arms
+    - an arm consists of a pattern to match against
+
+    - on windows pressing Enter return a carriage return and a newline (\r\n)
+    - catch-all -> _ in match expressions
 */
 
 use colored::{Color, Colorize};
