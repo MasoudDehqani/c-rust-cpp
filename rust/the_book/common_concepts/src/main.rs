@@ -90,8 +90,61 @@
 
 
     Numeric Operations
+    - division:
+        let quotient = 56.7 / 32.2
+        let truncated = 5 / 3 -> results in 1
+        let truncated = -5 / 3 -> results in -1
+
+
+    - booleans are 1 byte in size
+
+    The character type
+    - the char type is Rust's most primitive alphabetic type
+    - Rust's char is 4 bytes in size and represent a Unicode scalar value which means
+    it can represent more than just ASCII
+    - Unicode scalar values range from U+0000 to U+D7FF and U+E000 to U+10FFFF
+
+    Scalar types can group multiple values into one type
+    - Rust's twp primitive compound types: tuples and arrays
+    - both tuple and array are fixed-length, their size should be known at compile time
+    - tuple can contain values of different types
+    - array's element all should be of same type
+    - array is stored on the stack
+    - Which one tuple is stored on? stack or heap???
+    - an empty tuple is a special type called unit
+    - the type and the value of unit type are represented by ()
+    - unit represents an empty value or an empty return type
+    let tup: (i32, f64, u8) = (500, 6.4, 1);
+    let (x, y, z) = tup; -> destructuring
+    let x = tup.0;
+    let y = tup.1;
+
+    let arr: [i32; 4] = [1, 2, 3, 4];
+    let arr = [3; 5]; -> [3, 3, 3, 3, 3]
+    let x = arr[0];
+
+
+    Invalid array element access:
+    - in Rust, once it is attempted to access an array's element with an index
+    out of the array bound, the program panicked at runtime to prevent an
+    invalid access
+    - when, in code, you explicitly tries to access an out-of-bound index from
+    an array, the compiler would give an error and says this operation will panic
+    at runtime
+    - but if the index with which is tried to access an element in an array is
+    not specified, the program will panic at runtime to prevent an invalid access
+    to memory. it is one of Rust's memory safety principle in action. some other
+    languages allow the invalid access and continue running the program which
+    results in vulnerabilities and possible breach of security
 */
 
 fn main() {
-    println!("Hello, world!");
+    let tup: (i32, f64, u8) = (458, 89.3, 2);
+    let (x, y, z) = tup;
+    let x = tup.0;
+    let y = tup.1;
+
+    let arr: [i32; 4] = [1, 2, 3, 4];
+    let arr = [3; 5];
+    println!("{:?}", arr);
 }
