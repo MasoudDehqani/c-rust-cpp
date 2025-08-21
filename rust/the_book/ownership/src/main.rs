@@ -1,3 +1,54 @@
+/*
+    - ownership
+    - move
+    - safety is the absence of undefined behavior
+    - pointer
+    - all programming languages have the concept of pointer, they only differ in how
+    - Rust goal: include as few runtime check as possible in its output binary programs
+    - a foundational goal of Rust is to ensure your program never have undefined behavior
+    - a secondary goal of Rust is to prevent undefined behavior at compile time instead of runtime
+    - to compile programs into efficient binaries that require as few runtime checks as possible
+    they expose it to the programmers
+    - ownership as a discipline for memory safety
+    - Rust provides a particular way to think about memory
+    - stack frame
+    - reference is a type of pointer
+    - borrowing
+    - variables live in the stack
+    - boxes live in the heap
+    - Rust does not allow manual memory management (does no allow manual deallocation)
+    - But what are Drop trait and std::mem::drop method???
+    - deallocation - freeing - dropping
+    - focusing on frame-only variables is for better understanding of safety in Rust, but in fact
+    compiler may put the variable in the register instead of stack frame. it is the implementation
+    details and should not affect the understanding of the concept of safety in Rust
+    - only types that implement Copy trait can be copied implicitly
+    - copying all kinds of value can be expensive
+    - Rust uses pointer to access data without copying
+    - pointer - pointee
+    - owned pointer -> example: Box
+    - non-owned pointer -> reference
+    - references change variables' permissions
+    - borrow checker
+    - a value should outlive all of its references
+    - lifetime of a value is from its definition to its last usage
+    - memory management
+    - heap management
+    - pointer management
+    - manual memory management
+
+    - ownership at first introduced in a paper for something completely other than safety
+    it is introduced for the issue of leakage of internals of some data structures
+    then the concept used for memory safety in Rust
+
+    - when a program tries to read a value and expects it to be boolean and since the value
+    does not exist due to an invalid memory access, it would be an undefined behavior. the
+    address program tries to access could be anything which in not known at all
+
+    - heap data is not tied to a specific stack frame
+    - one common way to make a pointer is to allocate memory in the heap
+*/
+
 fn main() {
     /*
         As in Rust a value can only have one ownership at a time, here the ownership of
