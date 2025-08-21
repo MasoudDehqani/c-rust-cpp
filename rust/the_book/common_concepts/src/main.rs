@@ -136,6 +136,27 @@
     to memory. it is one of Rust's memory safety principle in action. some other
     languages allow the invalid access and continue running the program which
     results in vulnerabilities and possible breach of security
+
+
+    Functions
+    - the main function is the entry point to many programs is Rust
+    - Rust code uses snake_case convention for naming variables and functions
+
+    - Are declaration, definition, initialization in Rust like C???
+
+    - parameter VS argument in function
+    - parameters are special values that are part of the functions's signature
+    - arguments are concrete values passed to the function
+
+    - statements VS expressions
+    - Rust is an expression-based language
+    - in Rust, function definitions and variable creation are statements
+    - statements do not return any value, so you cannot assign a let statement
+    to another variable.
+    let y = 6 statement does not return a value. this is different from what
+    happens in languages like C where the assignment return the value of the
+    assignment.
+    C code example: int x = y = 6; -> both x and y will have the value 6
 */
 
 fn main() {
