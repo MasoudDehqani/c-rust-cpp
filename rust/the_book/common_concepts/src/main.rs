@@ -78,6 +78,18 @@
     checked_*
     overflowing_*
     saturating_*
+
+    - floating-point numbers are numbers with decimal points
+    - Rust's types for floating-point numbers are: f32 and f64 which are 32 bits and
+    64 bits in size respectively
+    - the default is f64 because on modern CPUs it's roughly the same speed as f32 but
+    is capable of more precision
+    - all floating point types are signed
+    - floating-point numbers are represented according to IEEE-754 standard
+    - Institute of Electrical and Electronics Engineers
+
+
+    Numeric Operations
 */
 
 fn main() {
