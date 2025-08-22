@@ -5,8 +5,9 @@
 */
 
 use std::env;
-use std::fs;
 use std::io::ErrorKind;
+
+mod io_reader;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -16,7 +17,7 @@ fn main() {
 
     println!("searching for '{query}' in the file -> {file_path}");
 
-    let file_content = fs::read_to_string(file_path);
+    let file_content = io_reader::utils::reader(file_path);
 
     match &file_content {
         Ok(s) => {
