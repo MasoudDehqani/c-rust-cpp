@@ -6,13 +6,15 @@
 
 use std::env;
 
-use command_line_program::mini_grep;
+use command_line_program::{Config, mini_grep};
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let config = Config::build(env::args()).unwrap_or_else(|err| {
+        println!("{err}");
+        std::process::exit(1);
+    });
 
-    let query = &args[1];
-    let file_path = &args[2];
+    let Config { query, file_path } = &config;
 
     println!("searching for '{query}' in the file -> {file_path}");
 
