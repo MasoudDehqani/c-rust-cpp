@@ -1,4 +1,4 @@
-use std::io::ErrorKind;
+use std::error::Error;
 
 mod utils;
 
@@ -40,17 +40,11 @@ impl Config {
     }
 }
 
-pub fn mini_grep(query: &str, file_path: &str) {
-    let file_content = std::fs::read_to_string(file_path);
+pub fn mini_grep(query: &str, file_path: &str) -> Result<(), Box<dyn Error>> {
+    let file_content = std::fs::read_to_string(file_path)?;
 
-    match &file_content {
-        Ok(s) => {
-            let search_result = utils::search::search_query_in_content(&s, &query);
-            println!("{:?}", search_result);
-        }
-        Err(e) => match e.kind() {
-            ErrorKind::NotFound => println!("Not Found"),
-            _ => println!("NOTHING"),
-        },
-    };
+    let search_result = utils::search::search_query_in_content(&file_content, &query);
+    println!("{:?}", search_result);
+
+    Ok(())
 }

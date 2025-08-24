@@ -18,5 +18,7 @@ fn main() {
 
     println!("searching for '{query}' in the file -> {file_path}");
 
-    mini_grep(query, file_path);
+    if let Err(e) = mini_grep(query, file_path) {
+        println!("{e}");
+    };
 }
