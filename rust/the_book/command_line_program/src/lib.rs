@@ -1,6 +1,6 @@
 use std::io::ErrorKind;
 
-mod io_reader;
+mod utils;
 
 pub struct Config {
     pub query: String,
@@ -41,11 +41,12 @@ impl Config {
 }
 
 pub fn mini_grep(query: &str, file_path: &str) {
-    let file_content = io_reader::utils::reader(file_path);
+    let file_content = std::fs::read_to_string(file_path);
 
     match &file_content {
         Ok(s) => {
-            io_reader::utils::handle_content_in_query(&s, &query);
+            let search_result = utils::search::search_query_in_content(&s, &query);
+            println!("{:?}", search_result);
         }
         Err(e) => match e.kind() {
             ErrorKind::NotFound => println!("Not Found"),
