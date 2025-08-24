@@ -20,15 +20,7 @@ fn main() {
         std::process::exit(1);
     });
 
-    let Config {
-        query,
-        file_path,
-        is_case_sensitive,
-    } = config;
-
-    println!("searching for '{query}' in the file -> {file_path} ...");
-
-    if let Err(e) = mini_grep(&query, &file_path, is_case_sensitive) {
+    if let Err(e) = mini_grep(config) {
         eprintln!("{e}");
     };
 }
