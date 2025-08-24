@@ -100,7 +100,7 @@ pub fn mini_grep(
         false => utils::search::search_query_in_content_case_insensitive(&file_content, query),
     };
 
-    println!("{:?}", search_result);
+    search_result.iter().for_each(|r| println!("{r}"));
 
     Ok(())
 }

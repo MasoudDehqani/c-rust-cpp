@@ -16,7 +16,7 @@ use command_line_program::{Config, mini_grep};
 */
 fn main() {
     let config = Config::build(env::args()).unwrap_or_else(|err| {
-        println!("{err}");
+        eprintln!("{err}");
         std::process::exit(1);
     });
 
@@ -26,9 +26,9 @@ fn main() {
         is_case_sensitive,
     } = config;
 
-    println!("searching for '{query}' in the file -> {file_path}");
+    println!("searching for '{query}' in the file -> {file_path} ...");
 
     if let Err(e) = mini_grep(&query, &file_path, is_case_sensitive) {
-        println!("{e}");
+        eprintln!("{e}");
     };
 }
