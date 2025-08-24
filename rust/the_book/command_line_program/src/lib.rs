@@ -23,9 +23,6 @@ pub struct Config {
     it means, inside the function body, the binding named args can be mutated.
     - in Rust, mutability is not part of the type, it is part of the binding
 
-    - Here Item is an associated type. How Item = String works here and how the associated type
-    differs with generic type???
-
     - The reasons why Iterators exist in Rust are:
     composability
     laziness
@@ -37,6 +34,11 @@ pub struct Config {
     - if you use iterator, for example, over an array and make multiple transformations, no intermediate
     array created when chaining methods. Unless you consume an iterator, the code does not do anything due
     to laziness
+
+    - Here '<Item = String>' is about making a type boundary using trait bound. It means only those types
+    that implements Iterator with specifying String as the type of Item.
+
+    ??? How the associated types differ with generic type???
 */
 impl Config {
     pub fn build<T: Iterator<Item = String>>(mut args: T) -> Result<Config, &'static str> {
