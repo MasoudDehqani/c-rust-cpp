@@ -9,7 +9,10 @@ use std::env;
 use command_line_program::{Config, mini_grep};
 
 /*
-    How if..let structure works here???
+    The if..let syntax is a syntactic sugar for pattern matching.
+    if let PATTERN = EXPRESSION { ... } means: evaluate EXPRESSION, try to match it against PATTERN. if
+    it matches run the block. if it doesn't, skip the block.
+
 */
 fn main() {
     let config = Config::build(env::args()).unwrap_or_else(|err| {
