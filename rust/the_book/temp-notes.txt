@@ -6,9 +6,29 @@ for loop
 
 - async code needs a runtime
 - a program's main function can initialize a runtime but it is not a runtime itself
+- deferrent runtimes have different bahavior based on OS, hardware, etc.
 
 - unrolling a for loop means create manual code for each loop iteration. it is a performance optimization can be done by compilers
 
 - while let conditional loop
 
 - polling
+
+- concurrency VS parallelism
+- core is in hardware. having multiple cores means having multiple cpu units
+- process is in software handling by OS
+- OS manages multiple processes at once.
+- thread is in a process and can be handled by the program inside a process
+- many operating systems provide API with which programming languages can call to create new threads. Rust standard library
+implemented 1:1 model of multi-threading in which 1 OS thread is used per 1 language thread
+
+- concurrency means doing multiple tasks by one entity by switching between tasks multiple times
+- parrallelism means breaking a task or tasks into multiple parts and doing the tasks simultaneously
+- threads can be both execute their tasks both concurrency and simultaneously
+
+- mutex -> mutual exclusive
+- lock - unlock
+- shared memory
+
+- race condition -> threads access data or resource in an inconsistent order
+- deadlock -> two threads are waiting for each other, preventing both threads from continuting
