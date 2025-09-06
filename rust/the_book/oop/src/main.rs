@@ -27,6 +27,39 @@
 
 use oop::{Button, Gui, Image};
 
+struct ScreenWithGenerics<T> {
+    components: Vec<T>,
+}
+
+impl<T: Gui> ScreenWithGenerics<T> {
+    fn run(&self) {
+        for component in self.components.iter() {
+            component.draw();
+        }
+    }
+}
+
+struct CheckBox {
+    is_checked: bool,
+}
+
+impl Gui for CheckBox {
+    fn draw(&self) {
+        println!("is_checked: {}", self.is_checked)
+    }
+}
+
+struct DropDown {
+    is_open: bool,
+    width: u32,
+}
+
+impl Gui for DropDown {
+    fn draw(&self) {
+        println!("is_open: {}, width: {}", self.is_open, self.width)
+    }
+}
+
 struct Screen {
     components: Vec<Box<dyn Gui>>,
 }
@@ -100,4 +133,18 @@ fn main() {
     let screen = Screen { components };
 
     screen.run();
+
+    let components_of_gui_with_generics = vec![
+        CheckBox { is_checked: false },
+        // DropDown {
+        //     is_open: false,
+        //     width: 16,
+        // },
+    ];
+
+    let screen_for_homogenous_components = ScreenWithGenerics {
+        components: components_of_gui_with_generics,
+    };
+
+    screen_for_homogenous_components.run();
 }

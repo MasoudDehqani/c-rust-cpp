@@ -1,3 +1,5 @@
+pub mod oop_design_patterns;
+
 pub trait Gui {
     fn draw(&self) {
         println!("DRAWING...")
