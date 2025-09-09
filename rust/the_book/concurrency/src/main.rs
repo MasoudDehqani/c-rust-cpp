@@ -35,6 +35,7 @@
 
 use std::thread;
 use std::time::Duration;
+mod data_sharing_by_message_passing;
 
 fn main() {
     let handle = thread::spawn(|| {
@@ -53,9 +54,27 @@ fn main() {
 
     handle.join().unwrap();
 
+    /*
+        closures decides whether they take ownership of the values from their environment or borrow
+        them, based on the code inside its body. so here without "move", the closure won't take the
+        ownership of the v vector. it only take a reference to v vector (as the code inside its body
+        does not need ownership of the vector). here Rust in fact infer how to capture v.
+        Rust compiler does not allow the closures passed to spawned threads take a reference to values
+        in their environment. Because there is no guarantee that the values live long enough until the
+        thread finishes its work. Even using join on the handle won't work if we remove the move
+        before the closure, because the main thread immediately will drop the vector after its last
+        usage (at the end of its lifetime) in the current scope
+        - note that here there is no value passed as argument to the closure. the closure only
+        uses its ability to capture values from its environment
+        - ??? If Rust allowed us to run this code (without using move), there’s a possibility that the
+        spawned thread would be immediately put in the background without running at all ???
+    */
     let v = vec![1, 2, 3];
-
     let handle_2 = thread::spawn(move || println!("vector: {v:?}"));
 
+    // drop(v);
+
     handle_2.join().unwrap();
+
+    data_sharing_by_message_passing::pass_message();
 }
