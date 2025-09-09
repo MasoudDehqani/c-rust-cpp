@@ -3,8 +3,10 @@
   on Mutex is a smart pointer and can be dereferenced using * operator
 
   - multiple ownership methods with Rc<T> and Arc<T>
-  - Rc<T> -> reference counting
-  - Arc<T> -> atomically reference-counted
+  - Rc<T> -> a reference counted smart pointer (for using in single-threaded contexts)
+  - Arc<T> -> atomically reference-counted (for using in multi-threaded contexts)
+  - Arc<T> is thread-safe, means that it can safely used in multi-threaded contexts
+  - thread safety comes with a performance penalty that you only want to pay when you really need to
   - Atomics are an additional kind of concurrency primitive
   - atomics work like primitive types but are safe to share across threads
 
