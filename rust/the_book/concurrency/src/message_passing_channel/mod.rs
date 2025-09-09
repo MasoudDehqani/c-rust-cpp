@@ -67,7 +67,7 @@ pub fn pass_message() {
 fn more_channels() {
     let (tx, rx) = mpsc::channel();
 
-    let handle = thread::spawn(move || {
+    let _handle = thread::spawn(move || {
         let values: Vec<String> = vec!["message", "from", "the", "thread"]
             .into_iter()
             .map(|s| s.to_string())

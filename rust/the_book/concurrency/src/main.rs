@@ -35,7 +35,8 @@
 
 use std::thread;
 use std::time::Duration;
-mod data_sharing_by_message_passing;
+mod message_passing_channel;
+mod shared_stated_concurrency;
 
 fn main() {
     let handle = thread::spawn(|| {
@@ -76,5 +77,6 @@ fn main() {
 
     handle_2.join().unwrap();
 
-    data_sharing_by_message_passing::pass_message();
+    message_passing_channel::pass_message();
+    shared_stated_concurrency::share_state();
 }
