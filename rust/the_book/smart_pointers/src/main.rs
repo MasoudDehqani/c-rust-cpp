@@ -32,6 +32,9 @@
   - interior mutability pattern -> an immutable type exposes an API for mutating an interior value
 
   - reference cycle -> leak memory
+
+  - destructor VS constructor
+  - std::mem::drop function VS drop method on Drop trait
 */
 
 mod box_smart_pointer;
