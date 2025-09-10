@@ -51,6 +51,11 @@ pub fn share_state() {
 
   - using Arc::clone will only increment the reference count, and it doesn't make a deep copy of
   all the data like most types' implementations of clone do
+
+  Note that if you are doing simple numerical operations, there are types simpler than Mutex<T> types provided
+  by the std::sync::atomic module of the standard library. These types provide safe, concurrent, atomic access
+  to primitive types. We chose to use Mutex<T> with a primitive type for this example so we could concentrate
+  on how Mutex<T> works
 */
 fn _share_state_step_4() {
     let counter = Arc::new(Mutex::new(0));
