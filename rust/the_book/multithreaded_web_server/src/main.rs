@@ -13,6 +13,23 @@ fn main() {
         .for_each(|s| handle_connection(s.unwrap()));
 }
 
+/*
+  HTTP request structure:
+  line 1: Method Request-URI HTTP-Version CRLF
+  line 2: headers CRLF
+  line 3: an empty line after all headers is the sign of end of headers
+  line 4 and so on: message body
+
+  HTTP response structure:
+  line 1: HTTP-Version Status-Code Reason-Phrase CRLF
+  line 2: headers CRLF
+  line 3: an empty line after all headers is the sign of end of headers
+  line 4 and so on: message body
+
+  CRLF -> carriage return, line feed
+  - using two CRLF means an end line and an empty line. that is why after headers "\r\n\r\n" is used. it means
+  end of headers and then after that the body message can start
+*/
 fn handle_connection(mut stream: TcpStream) {
     let buf = BufReader::new(&stream);
     let req_line = buf.lines().next().unwrap().unwrap();
@@ -123,4 +140,23 @@ fn _handle_connection_with_read_to_string(mut stream: TcpStream) {
 
         None => println!("ERROR"),
     };
+}
+
+/*
+  In response, after the status text in the first and only line, there are two CRLF which
+  means there are no headers and no message body, because a two CRLF meand a line ending and
+  an empty line which means end of status line and headers
+  - In other words, the double CRLF marks end of headers and after that the message body starts, but
+  if nothing follows, then there simply is no body
+*/
+fn _handle_http_request(mut stream: TcpStream) {
+    let buf = BufReader::new(&stream);
+    let _http_request: Vec<_> = buf
+        .lines()
+        .map(|result| result.unwrap())
+        .take_while(|line| !line.is_empty())
+        .collect();
+
+    let response = "HTTP/1.1 200 OK\r\n\r\n";
+    stream.write_all(response.as_bytes()).unwrap();
 }
