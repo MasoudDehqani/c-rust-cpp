@@ -56,6 +56,7 @@ impl Drop for ThreadPool {
     fn drop(&mut self) {
         drop(self.sender.take());
         for worker in self.workers.drain(..) {
+            println!("shutting down worker {}", worker.id);
             worker.thread.join().unwrap();
         }
     }
