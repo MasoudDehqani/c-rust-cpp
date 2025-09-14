@@ -34,6 +34,20 @@
   the operating system, and the async runtime we are using, that concurrency may also use parallelism
   under the hood
 
+  - The key elements of asynchronous programming in Rust are futures and async/await keywords
+  - Rust provides Future trait which acts as an interface, so that different async operations
+  can be implemented with different data structures but with a common interface
+  - In Rust, futures are types that implement the Future trait
+
+  - You can apply async keyword to blocks and functions to specify that they can be interrupted and
+  resumed
+  - You can use await keyword to await a future
+
+  - The process of checking with a future to see if its value is available yet, is called polling
+
+  - Rust compiles the code written with async/await to the equivalent code with Future trait, much as
+  it compiles for loop into equivalent code using Iterator trait
+
   - communication over channel VS communication over static memory (if the data is read-only)
   - awaiting on a join handle is one way of communicate the outcome of the spawned operation
   back to the caller
