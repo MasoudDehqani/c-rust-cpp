@@ -64,7 +64,11 @@ system use
 
 - placeholder for variable in a format string
 - placeholders for different variables in format strings in C:
-%d for decimal
+%d -> int and short int
+%u -> unsigned int and unsigned short int
+%ld -> long int
+%lu -> unsigned long int
+
 
 - sizeof operator:
 example -> sizeof(int)
@@ -73,7 +77,7 @@ example -> sizeof(int)
 - range -> upper and lower limit of some set of data
 
 - if sizeof(long int) = 4 bytes
-then sizeof(long lont int) = 8 bytes
+then sizeof(long long int) = 8 bytes
 - if sizeof(long int) = 8 bytes
 then sizeof(long long int) = 8 bytes
 
