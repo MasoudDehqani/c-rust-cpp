@@ -41,7 +41,8 @@
   - The first step in any compiler or interpreter is scanning -> produces tokens -> will then be fed to the parser
 */
 
-use std::{env, process};
+use lox_rs::Scanner;
+use std::{env, fs, io, process};
 
 fn main() {
     let mut args = env::args();
@@ -62,9 +63,26 @@ fn main() {
 }
 
 fn run_file(path: String) {
-    println!("{}", path)
+    let source = fs::read_to_string(path).unwrap();
+    run(source)
 }
 
 fn run_prompt() {
-    println!("PROPMP")
+    loop {
+        print!("> ");
+        let mut line = String::new();
+        io::stdin()
+            .read_line(&mut line)
+            .expect("Error reading line");
+
+        if line.is_empty() {
+            break;
+        }
+
+        run(line);
+    }
+}
+
+fn run(source: String) {
+    Scanner::scan(source);
 }
