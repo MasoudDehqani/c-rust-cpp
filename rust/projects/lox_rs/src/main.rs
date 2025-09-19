@@ -39,10 +39,18 @@
   - indirection
 
   - The first step in any compiler or interpreter is scanning -> produces tokens -> will then be fed to the parser
+
+  - side note form print! macro usage:
+  Note that stdout is frequently line-buffered by default so it may be necessary to
+  use io::stdout().flush() to ensure the output is emitted immediately
 */
 
 use lox_rs::Scanner;
-use std::{env, fs, io, process};
+use std::{
+    env, fs,
+    io::{self, Write},
+    process,
+};
 
 fn main() {
     let mut args = env::args();
@@ -70,16 +78,15 @@ fn run_file(path: String) {
 fn run_prompt() {
     loop {
         print!("> ");
+        io::stdout().flush().unwrap();
         let mut line = String::new();
-        io::stdin()
-            .read_line(&mut line)
-            .expect("Error reading line");
-
-        if line.is_empty() {
-            break;
+        match io::stdin().read_line(&mut line) {
+            Ok(_bytes_read) => run(line),
+            Err(e) => {
+                println!("Error reading line {e}");
+                break;
+            }
         }
-
-        run(line);
     }
 }
 

@@ -8,7 +8,7 @@ impl Scanner {
         }
     }
 
-    fn tokens(_source: String) -> Vec<String> {
-        vec![]
+    fn tokens(source: String) -> Vec<char> {
+        source.chars().collect()
     }
 }
