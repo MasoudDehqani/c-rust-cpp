@@ -32,6 +32,16 @@ fn main() {
             handle_request(&stream);
         });
     }
+
+    /*
+      This is for testing graceful shutdown
+    */
+    // for stream in listener.incoming().take(3) {
+    //     let stream = stream.unwrap();
+    //     pool.execute(move || {
+    //         handle_request(&stream);
+    //     });
+    // }
 }
 
 type Job = dyn Fn() + 'static + Send;
@@ -55,8 +65,6 @@ impl Worker {
                         break;
                     }
                 }
-                let job: Box<Job> = receiver.lock().unwrap().recv().unwrap();
-                job();
             }
         });
 
