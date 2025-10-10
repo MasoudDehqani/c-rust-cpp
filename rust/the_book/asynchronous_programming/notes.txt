@@ -1,0 +1,213 @@
+Rust currently provides only the bare essentials for writing async code. Importantly, executors, tasks, reactors, combinators, and low-level I/O futures and traits are not yet provided in the standard library.
+
+Rust is a low-level language and strives towards minimal runtime overhead. The async runtime therefore has a much more limited scope than many other languages' runtimes
+
+executor (or runtime) - reactor (event loop or driver ) - task - combinator - runtime - scheduler - IPC (inter-process communication) - timer - process - subscriber - polling - external events - async I/O
+
+the term "async runtime" is used to mean either a part of an async runtime or the whole functionality a library provides for async programming
+
+Async runtimes are libraries used for executing async applications. Runtimes usually bundle together a reactor with one or more executors
+
+- Async Foundations Team
+
+- async tasks must be managed and scheduled
+
+- Each async function compiles into a state machine
+- The runtime is a scheduler/executor that polls those state machines when they’re ready to make progress (e.g., after I/O)
+
+Future = state machine
+Runtime = orchestration layer that wakes futures up and polls them
+
+- Ultimately, something has to execute this state machine, and that something is a runtime
+- executor
+
+- futures in Rust are lazy: they don’t do anything until you ask them to with the await keyword
+
+- it’s important for Rust to be able to provide its performance guarantees, just as it is with iterators
+
+-A program’s main function can initialize a runtime, but it’s not a runtime itself
+
+- Most languages that support async bundle a runtime, but Rust does not
+
+async -> transformation directive to the compiler
+transforming this:
+async fn foo() {}
+to this:
+fn foo() -> impl Future<Output = ()> {}
+
+async in Rust -> concurrency
+- depending on the hardware, the operating system, and the async runtime we are using, this concurrency may also use parallelism under the hood
+
+- interrupts by OS can also enable concurrency which happens only at the level of the entire program. because we understand our program at a much more granular level than the OS does, we can spot opportunities for concurrency that OS can't see
+
+- It's easier to read the async code, not necessarily easier to reason about
+
+- multithreading and async provide complementary solutions, that you can combine in many cases
+
+process - cores - threads - interrupts - concurrency - parallelism - multithreading - serial - sequential - blocking - unblocking
+
+In Rust, futures are types that implement the Future trait
+
+Rust provides a Future trait as a building block so that different async operations can be implemented with different data structures but with a common interface
+
+The process of checking with a future to see if its value is available yet is called polling
+
+Rust compiles the codes written using async and await keywords into equivalent code using the Future trait, much as it compiles for loops into equivalent code using the Iterator trait
+
+futures in Rust are lazy: they don’t do anything until you ask them to with the await keyword
+
+Rust's await keyword is a postfix keyword, so it makes chains of methods much nicer to work with
+
+CPU-bound or compute-bound operations
+I/O bound operations
+
+overhead of creating a new thread
+
+executor crate -> tokio is an example
+polling
+epoll loop -> linux
+procedural macro
+yield
+async runtime
+outer executive loop
+select!() macro
+branches
+select! expands basically into a loop with match or a bunch of ifs (expand to Rust code)
+if you want to implement future manually, by implementing the trait Future, you don't have access to "yield" keyword. instead you have to manually implement the state machine, which is the what the future ecosystem used to be before async/await landed
+kq VS libuv
+kqueue: A kernel-level system for event notification and handling in FreeBSD and macOS
+epoll: A Linux-specific system call for scalable I/O event notification
+
+epoll system
+operating system event loop
+event register
+
+the Tokio crate uses the mio crate as a low-level component to provide its event loop and non-blocking I/O capabilities by interfacing with the operating system's event notification mechanisms like epoll, kqueue, and IOCP asynchronous runtime
+task scheduler
+file descriptor
+file pointer
+
+non-operating-system-based events
+tokio::fs::File VS std::fs::File
+there is no async function on std::fs::File and std rely on integration with the executor that you need to get the cooperative scheduling
+the tokio is the asynchronous version of I/O resources
+
+An async fn in Rust compiles into a "Future" or a state machine
+tokio VS async-std
+Asynchronous programming in Rust, including with async-std, is not inherently tied to multithreading but rather enables non-blocking execution, where a single thread can manage many tasks by yielding control when a task is waiting for I/O or other operations
+
+async/await in Rust does not directly uses threads, instead it uses asynchrounous runtimes like async-std or tokio
+asynchronous runtimes like async-std or tokio rely on thread pools
+
+futurepoll - future poll
+
+in-memory channel
+
+fuse -> maybe ensures that a future can be polled despite the fact that it returns its value
+
+using mutable reference to a future VS using the future itself
+
+we can use select!() in a loop, only if we use a mutable reference to futures
+
+executor machine
+executor machinery
+executor -> part of an async runtime
+
+executor - reactor
+
+amortized across all futures
+
+asynchronous I/O read VS synchronous I/O read
+- fewer threads run by the executor in asynchronous I/O read and have them cooperatively scheduled
+- no context switch in asynchronous: the executor, when facing a blocking operation, returns back to the same thread (instead of going to another thread) and yields and then just polls another future
+- in general the asynchronous version is more efficient but in practice it is hard to say which one is objectively faster because it really depends on the use case
+- easier to read the async code, not necessarily easier to reason about
+- protothread -> A protothread is a low-overhead mechanism for concurrent programming
+
+user space threads
+
+join
+join operation
+join!() macro
+- running await on some futures one by one is sequential while using join on them is done in parallel (or concurrently)
+- the join waits on all of the futures and at the end return their value, but it does it concurrently, not one by one and wait for one to complete and then goes to the next one
+
+- there are different kinds of joins in async runtimes like tokio
+- future -> state machine
+- async runtime -> orchestration layer that wakes futures up and polls them
+
+Rust deliberately avoids shipping a runtime in the standard library for two reasons:
+1. Zero-cost abstractions – Not all Rust programs need async. A runtime would bloat even small binaries.
+2. Freedom of choice – Different use cases need different designs (Tokio for servers, async-std for POSIX-like style, embedded runtimes, no-std runtimes, etc.).
+- This is unlike Go or JavaScript, where the runtime is always there and included in the language.
+
+- JavaScript is single-threaded, and the event loop is always there — promises automatically get queued and resolved.
+- Rust has no global runtime or event loop built-in. If Rust forced one, it would impose overhead and design decisions on all users (including embedded and systems programming folks who don’t want it).
+- A Rust Future is lazy: it won’t run unless explicitly polled. A JS Promise is eager: it starts running as soon as you create it.
+- That’s why in Rust you need to “hand futures over” to something like Tokio, smol, or async-std to drive them.
+
+Both .then() and .await can be applied to futures
+
+futures ordered
+futures unordered
+
+multiplex
+
+- a runtime has fixed (or limited) number of threads. so tokio::spawn() doesn't mean spawning a new thread, it means going to the job queue of the thread pool of the runtime
+- in general, the spawn of a runtime needs a future which is static so it knows the lifetime of the future fits the lifetime of runtime. the future also needs to implement Send trait which means it can be sent across threads
+
+- parallelism in asynchronous programming
+- introduce futures that can run in parallel to the executor
+- concurrency on one thread, parallelism on multiple threads
+- it's why we need spawning in asynchronous programming
+
+futures can yield ⤴️
+
+In a program, errors may occur in different threads or runtimes of the program and these threads or runtimes cannot communicate the errors with each other (or you can't propagate the error any further). one way to handle these errors is to use "tracing" crate by emitting an error event and handle it somewhere else
+tracing -> an event distribution tool -> decouple the production of the events and the subscription to events
+
+runtime discovery
+let runtime = tokio::runtime::Runtime::new();
+runtime.block_on() method sets some special thread locals inside the executor
+the tokio spawn then will check those thread locals to find the current runtime and then spawn on there
+
+control plane traffic
+data plane traffic
+The control plane determines how data should flow across a network or system, while the data plane is responsible for the actual, high-speed forwarding of data according to the control plane's instructions. The control plane provides the logic, settings, and routing tables, whereas the data plane executes those directives, handling the heavy lifting of moving data packets efficiently
+
+singleton runtime
+
+runtime controls
+priority controls
+
+What should I do if there is an expensive function like hashing a password that I don't want to block async execution of a thread?
+That's when you use something like spawn blocking or block in place
+
+What happens when you tokio spawn before creating any runtime?
+It panics, It says there is no runtime
+
+Rust futures do not depend on thread locals
+There is nothing in the async support in the Rust language or standard library that requires thread locals
+tokio uses thread locals. that means tokio does not work well on an embedded context where you might not have thread locals
+
+stack variable in async
+when you write an async block, the compiler generates a sort of state machine
+
+doing works in serial
+
+Rust doesn't have a builtin library to deal with HTTP, it only has a net module that deals with raw IP and TCP protocols
+
+an async function or any async block is a chunked computation
+in between the chunks is an await
+
+the "futures" crate has its own executor but not its own reactor, so it is not considered a full async runtime
+the term "async runtime" is used to mean either a part of an async runtime or the whole functionality a library provides for async programming
+
+There are no strong rules about how a runtime must be structured, but some terms and division of responsibilities are common:
+- reactor or event loop or driver (equivalent terms): dispatches IO and timer events, interacts with the OS, and does the lowest-level driving forward of execution,
+- scheduler: determines when tasks can execute and on which OS threads,
+- executor or runtime: combines the reactor and scheduler, and is the user-facing API for running async tasks; runtime is also used to mean the whole library of functionality (e.g., everything in the Tokio crate, not just the Tokio executor which is represented by the Runtime type)
+
+The Either type is somewhat similar to a Result in that it has two cases. Unlike Result, though, there is no notion of success or failure baked into Either. Instead, it uses Left and Right to indicate “one or the other”
+
+A future that is safe to poll after it  has returned Ready, is sometimes referred to as a fused future
