@@ -8,93 +8,20 @@
   performing a specific task from a job queue
 */
 
-use std::{
-    sync::{
-        Arc, Mutex,
-        mpsc::{self, Receiver},
-    },
-    thread,
-};
+// struct ThreadPool;
 
-type Job = Box<dyn FnOnce() + Send + 'static>;
-
-struct Worker {
-    id: usize,
-    thread: thread::JoinHandle<()>,
-}
-
-impl Worker {
-    fn new(id: usize, receiver: Arc<Mutex<Receiver<Job>>>) -> Worker {
-        let thread = thread::spawn(move || {
-            loop {
-                let message = receiver.lock().unwrap().recv();
-
-                match message {
-                    Ok(job) => {
-                        println!("Worker {id} is executing...");
-
-                        job();
-                    }
-                    Err(_) => {
-                        println!("Worker {} disconnected, shutting down...", id);
-                        break;
-                    }
-                }
-            }
-        });
-
-        Self { id, thread }
-    }
-}
-
-pub struct ThreadPool {
-    workers: Vec<Worker>,
-    sender: Option<mpsc::Sender<Job>>,
-}
-
-impl Drop for ThreadPool {
-    fn drop(&mut self) {
-        drop(self.sender.take());
-        for worker in self.workers.drain(..) {
-            println!("shutting down worker {}", worker.id);
-            worker.thread.join().unwrap();
-        }
-    }
-}
-
-impl ThreadPool {
-    /// Create a new ThreadPool.
-    ///
-    /// The size is the number of threads in the pool.
-    ///
-    /// # Panics
-    ///
-    /// The `new` function will panic if the size is zero.
-    pub fn new(size: usize) -> Self {
-        assert!(size > 0);
-
-        let (tx, rx) = mpsc::channel();
-
-        let receiver = Arc::new(Mutex::new(rx));
-
-        let mut workers = vec![];
-
-        for i in 1..=size {
-            let worker = Worker::new(i, Arc::clone(&receiver));
-            workers.push(worker);
-        }
-
-        Self {
-            workers,
-            sender: Some(tx.clone()),
-        }
-    }
-
-    pub fn execute<F: FnOnce() + Send + 'static>(&self, f: F) {
-        let job = Box::new(f);
-        self.sender.as_ref().unwrap().send(job).unwrap();
-    }
-}
+// impl ThreadPool {
+//     /// Create a new ThreadPool.
+//     ///
+//     /// The size is the number of threads in the pool.
+//     ///
+//     /// # Panics
+//     ///
+//     /// The `new` function will panic if the size is zero.
+//     pub fn new(size: usize) -> Self {
+//         assert!(size > 0);
+//     }
+// }
 
 // TODO: change new associated function to "build" with this signature
 // pub fn build(size: usize) -> Result<ThreadPool, PoolCreationError>

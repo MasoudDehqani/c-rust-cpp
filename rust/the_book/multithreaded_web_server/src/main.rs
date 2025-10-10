@@ -11,23 +11,124 @@
 */
 
 use std::{
-    fs,
-    io::{BufRead, BufReader, Read, Write},
-    net::{TcpListener, TcpStream},
-    thread,
+    fs::read_to_string,
+    io::{BufRead, BufReader, Write},
+    net::TcpStream,
+    sync::{
+        Arc, Mutex,
+        mpsc::{self, Receiver, Sender},
+    },
+    thread::{self, JoinHandle},
     time::Duration,
 };
 
-use multithreaded_web_server::ThreadPool;
-
 fn main() {
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let listener = std::net::TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(4);
 
-    listener.incoming().for_each(|stream| {
+    for stream in listener.incoming() {
         let stream = stream.unwrap();
-        pool.execute(|| handle_connection(stream));
-    });
+        pool.execute(move || {
+            handle_request(&stream);
+        });
+    }
+}
+
+type Job = dyn Fn() + 'static + Send;
+
+struct Worker {
+    id: usize,
+    thread: JoinHandle<()>,
+}
+
+impl Worker {
+    fn new(id: usize, receiver: Arc<Mutex<Receiver<Box<Job>>>>) -> Self {
+        let thread = thread::spawn(move || {
+            loop {
+                let message: Result<Box<dyn Fn() + Send + 'static>, mpsc::RecvError> =
+                    receiver.lock().unwrap().recv();
+
+                match message {
+                    Ok(job) => job(),
+                    Err(_) => {
+                        println!("Worker {id} disconnected");
+                        break;
+                    }
+                }
+                let job: Box<Job> = receiver.lock().unwrap().recv().unwrap();
+                job();
+            }
+        });
+
+        Self { id, thread }
+    }
+}
+
+struct ThreadPool {
+    workers: Vec<Worker>,
+    sender: Option<Sender<Box<Job>>>,
+}
+
+impl ThreadPool {
+    fn new(size: usize) -> Self {
+        assert!(size > 0);
+
+        let (sender, receiver) = mpsc::channel();
+        let receiver = Arc::new(Mutex::new(receiver));
+
+        let mut workers: Vec<Worker> = Vec::with_capacity(size);
+        for i in 0..size {
+            let receiver = Arc::clone(&receiver);
+            let worker = Worker::new(i, receiver);
+
+            workers.push(worker);
+        }
+
+        Self {
+            workers,
+            sender: Some(sender),
+        }
+    }
+
+    fn execute(&self, f: impl Fn() + 'static + Send) {
+        self.sender.as_ref().unwrap().send(Box::new(f)).unwrap();
+    }
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        drop(self.sender.take());
+        // for worker in &mut self.workers {
+        //     worker.thread.join().unwrap();
+        // }
+
+        for worker in self.workers.drain(..) {
+            println!("Shutting down worker {}", worker.id);
+            worker.thread.join().unwrap();
+        }
+    }
+}
+
+fn handle_request(mut stream: &TcpStream) {
+    let buf = BufReader::new(stream);
+    let request_line = buf.lines().next().unwrap().unwrap();
+
+    let (content_path, status_line) = match request_line.as_str() {
+        "GET / HTTP/1.1" => ("hello.html", "HTTP/1.1 200 OK"),
+        "GET /sleep HTTP/1.1" => {
+            thread::sleep(Duration::from_secs(5));
+            ("hello.html", "HTTP/1.1 200 OK")
+        }
+        _ => ("404.html", "HTTP/1.1 404 NOT FOUND"),
+    };
+
+    let content = read_to_string(content_path).unwrap();
+    let response = format!(
+        "{status_line}\r\nContent-Length: {}\r\n\r\n{content}",
+        content.len()
+    );
+
+    stream.write_all(&response.into_bytes()).unwrap();
 }
 
 /*
@@ -38,31 +139,32 @@ fn main() {
   TODO: unit test with TDD approach
   TODO: what would be different here if we were going to execute a future instead of a closure?
 */
-struct _ThreadPoolStage1;
-impl _ThreadPoolStage1 {
-    pub fn _new(_thread_count: u8) -> Self {
-        Self
-    }
+// struct _ThreadPoolStage1;
+// impl _ThreadPoolStage1 {
+//     pub fn _new(_thread_count: u8) -> Self {
+//         Self
+//     }
 
-    pub fn _execute<F: FnOnce() + Send + 'static>(&self, _f: F) {}
-}
-fn _main_stage_1() {
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-    let pool = _ThreadPoolStage1::_new(4);
+//     pub fn _execute<F: FnOnce() + Send + 'static>(&self, _f: F) {}
+// }
 
-    listener.incoming().for_each(|stream| {
-        let stream = stream.unwrap();
-        pool._execute(|| handle_connection(stream));
-    });
-}
+// fn _main_stage_1() {
+//     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+//     let pool = _ThreadPoolStage1::_new(4);
 
-fn _multithreaded_server_infinite_threads() {
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+//     listener.incoming().for_each(|stream| {
+//         let stream = stream.unwrap();
+//         pool._execute(|| handle_connection(stream));
+//     });
+// }
 
-    listener.incoming().for_each(|s| {
-        thread::spawn(|| _handle_connection_with_blocking(s.unwrap()));
-    });
-}
+// fn _multithreaded_server_infinite_threads() {
+//     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+
+//     listener.incoming().for_each(|s| {
+//         thread::spawn(|| _handle_connection_with_blocking(s.unwrap()));
+//     });
+// }
 
 /*
   HTTP request structure:
@@ -81,21 +183,21 @@ fn _multithreaded_server_infinite_threads() {
   - using two CRLF means an end line and an empty line. that is why after headers "\r\n\r\n" is used. it means
   end of headers and then after that the body message can start
 */
-fn handle_connection(mut stream: TcpStream) {
-    let buf = BufReader::new(&stream);
-    let req_line = buf.lines().next().unwrap().unwrap();
+// fn handle_connection(mut stream: TcpStream) {
+//     let buf = BufReader::new(&stream);
+//     let req_line = buf.lines().next().unwrap().unwrap();
 
-    let (path, status_line) = match req_line.as_str() {
-        "GET / HTTP/1.1" => ("hello.html", "HTTP/1.1 200 OK"),
-        _ => ("404.html", "HTTP/1.1 404 NOT FOUND"),
-    };
+//     let (path, status_line) = match req_line.as_str() {
+//         "GET / HTTP/1.1" => ("hello.html", "HTTP/1.1 200 OK"),
+//         _ => ("404.html", "HTTP/1.1 404 NOT FOUND"),
+//     };
 
-    let content = fs::read_to_string(path).unwrap();
-    let content_length = content.len();
-    let res = format!("{status_line}\r\nContent-Length: {content_length}\r\n\r\n{content}");
+//     let content = fs::read_to_string(path).unwrap();
+//     let content_length = content.len();
+//     let res = format!("{status_line}\r\nContent-Length: {content_length}\r\n\r\n{content}");
 
-    stream.write_all(res.as_bytes()).unwrap();
-}
+//     stream.write_all(res.as_bytes()).unwrap();
+// }
 
 /*
   It is a code to show how a single-threaded tcp server respond to requests when one of the
@@ -103,25 +205,25 @@ fn handle_connection(mut stream: TcpStream) {
   - The code also is refactored
   - desugaring -> remove the syntactic sugar and expand the code to its original form
 */
-fn _handle_connection_with_blocking(mut stream: TcpStream) {
-    let buf = BufReader::new(&stream);
-    let req_line = buf.lines().next().unwrap().unwrap();
+// fn _handle_connection_with_blocking(mut stream: TcpStream) {
+//     let buf = BufReader::new(&stream);
+//     let req_line = buf.lines().next().unwrap().unwrap();
 
-    let (path, status_line) = match req_line.as_str() {
-        "GET / HTTP/1.1" => ("hello.html", "HTTP/1.1 200 OK"),
-        "GET /blocking HTTP/1.1" => {
-            thread::sleep(Duration::from_secs(5));
-            ("hello.html", "HTTP/1.1 200 OK")
-        }
-        _ => ("404.html", "HTTP/1.1 404 NOT FOUND"),
-    };
+//     let (path, status_line) = match req_line.as_str() {
+//         "GET / HTTP/1.1" => ("hello.html", "HTTP/1.1 200 OK"),
+//         "GET /blocking HTTP/1.1" => {
+//             thread::sleep(Duration::from_secs(5));
+//             ("hello.html", "HTTP/1.1 200 OK")
+//         }
+//         _ => ("404.html", "HTTP/1.1 404 NOT FOUND"),
+//     };
 
-    let content = fs::read_to_string(path).unwrap();
-    let content_length = content.len();
-    let res = format!("{status_line}\r\nContent-Length: {content_length}\r\n\r\n{content}");
+//     let content = fs::read_to_string(path).unwrap();
+//     let content_length = content.len();
+//     let res = format!("{status_line}\r\nContent-Length: {content_length}\r\n\r\n{content}");
 
-    stream.write_all(res.as_bytes()).unwrap();
-}
+//     stream.write_all(res.as_bytes()).unwrap();
+// }
 
 /*
   - the kernel receives the packet data from the NIC -> stores it in its own buffer
@@ -130,30 +232,30 @@ fn _handle_connection_with_blocking(mut stream: TcpStream) {
   between two places
   - NIC -> network interface controller (network interface card)
 */
-fn _handle_connection_with_buffer(mut stream: TcpStream) {
-    let buf = BufReader::new(&stream);
-    let req_line = buf.lines().next().unwrap().unwrap();
+// fn _handle_connection_with_buffer(mut stream: TcpStream) {
+//     let buf = BufReader::new(&stream);
+//     let req_line = buf.lines().next().unwrap().unwrap();
 
-    match req_line.as_str() {
-        "GET / HTTP/1.1" => {
-            let content = fs::read_to_string("hello.html").unwrap();
-            let content_length = content.len();
-            let content =
-                format!("HTTP/1.1 200 OK\r\nContent-Length: {content_length}\r\n\r\n{content}");
+//     match req_line.as_str() {
+//         "GET / HTTP/1.1" => {
+//             let content = fs::read_to_string("hello.html").unwrap();
+//             let content_length = content.len();
+//             let content =
+//                 format!("HTTP/1.1 200 OK\r\nContent-Length: {content_length}\r\n\r\n{content}");
 
-            stream.write_all(content.as_bytes()).unwrap();
-        }
-        _ => {
-            let content = fs::read_to_string("404.html").unwrap();
-            let content_length = content.len();
-            let content = format!(
-                "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {content_length}\r\n\r\n{content}"
-            );
+//             stream.write_all(content.as_bytes()).unwrap();
+//         }
+//         _ => {
+//             let content = fs::read_to_string("404.html").unwrap();
+//             let content_length = content.len();
+//             let content = format!(
+//                 "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {content_length}\r\n\r\n{content}"
+//             );
 
-            stream.write_all(content.as_bytes()).unwrap();
-        }
-    }
-}
+//             stream.write_all(content.as_bytes()).unwrap();
+//         }
+//     }
+// }
 
 /*
   This code makes the server wait for an EOF. Here the tcp stream in the keep-alive connection does not
@@ -165,34 +267,34 @@ fn _handle_connection_with_buffer(mut stream: TcpStream) {
   - a buffer is just a chunk of memory where you temporarily store data while moving moving it
   between two places
 */
-fn _handle_connection_with_read_to_string(mut stream: TcpStream) {
-    let mut s = String::new();
-    stream.read_to_string(&mut s).unwrap();
+// fn _handle_connection_with_read_to_string(mut stream: TcpStream) {
+//     let mut s = String::new();
+//     stream.read_to_string(&mut s).unwrap();
 
-    match s.lines().next() {
-        Some(status) => {
-            if status == "GET / HTTP/1.1" {
-                let content = fs::read_to_string("hello.html").unwrap();
-                let content_length = content.len();
-                let res =
-                    format!("HTTP/1.1 200 OK\r\nContent-Length: {content_length}\r\n\r\n{content}");
-                println!("{}", res);
+//     match s.lines().next() {
+//         Some(status) => {
+//             if status == "GET / HTTP/1.1" {
+//                 let content = fs::read_to_string("hello.html").unwrap();
+//                 let content_length = content.len();
+//                 let res =
+//                     format!("HTTP/1.1 200 OK\r\nContent-Length: {content_length}\r\n\r\n{content}");
+//                 println!("{}", res);
 
-                stream.write_all(res.as_bytes()).unwrap();
-            } else {
-                let content = fs::read_to_string("404.html").unwrap();
-                let content_length = content.len();
-                let res = format!(
-                    "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {content_length}\r\n\r\n{content}"
-                );
+//                 stream.write_all(res.as_bytes()).unwrap();
+//             } else {
+//                 let content = fs::read_to_string("404.html").unwrap();
+//                 let content_length = content.len();
+//                 let res = format!(
+//                     "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {content_length}\r\n\r\n{content}"
+//                 );
 
-                stream.write_all(res.as_bytes()).unwrap();
-            }
-        }
+//                 stream.write_all(res.as_bytes()).unwrap();
+//             }
+//         }
 
-        None => println!("ERROR"),
-    };
-}
+//         None => println!("ERROR"),
+//     };
+// }
 
 /*
   In response, after the status text in the first and only line, there are two CRLF which
@@ -201,14 +303,14 @@ fn _handle_connection_with_read_to_string(mut stream: TcpStream) {
   - In other words, the double CRLF marks end of headers and after that the message body starts, but
   if nothing follows, then there simply is no body
 */
-fn _handle_http_request(mut stream: TcpStream) {
-    let buf = BufReader::new(&stream);
-    let _http_request: Vec<_> = buf
-        .lines()
-        .map(|result| result.unwrap())
-        .take_while(|line| !line.is_empty())
-        .collect();
+// fn _handle_http_request(mut stream: TcpStream) {
+//     let buf = BufReader::new(&stream);
+//     let _http_request: Vec<_> = buf
+//         .lines()
+//         .map(|result| result.unwrap())
+//         .take_while(|line| !line.is_empty())
+//         .collect();
 
-    let response = "HTTP/1.1 200 OK\r\n\r\n";
-    stream.write_all(response.as_bytes()).unwrap();
-}
+//     let response = "HTTP/1.1 200 OK\r\n\r\n";
+//     stream.write_all(response.as_bytes()).unwrap();
+// }
