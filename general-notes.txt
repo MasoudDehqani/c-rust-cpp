@@ -1,14 +1,31 @@
-- building VS compinling
+- building VS compiling
+preprocessor - compiler - linker 
 
 - C compiler looks for 'main' function to start compilation. This particular function is the entry point of the C program.
 - The 'main' function is the entry point of Rust programs too.
+- The 'main' function is the entry point of C++ programs too.
 
-- Both C and Rust return 0 for successful compilation of the program and return an integer other than 0 for failed compilation
+- operating system is the caller of the main function ??
+
+- C, Rust and C++ return 0 for successful compilation of the program and return an integer other than 0 for failed compilation
+
+- The role of "return" keyword and semicolon (;) in C, Rust and C++
+
+- statement VS expression
+- statement is a type of instruction
+
+- header file in C and C++
+- namespace in C++
+- object files in C and C++
+
+- This syntax (std::) exists in both Rust and C++
 
 - In C the main function mostly does not take any parameters. But it can take argc and argv as parametes whose valus are provided at runtime by
 command-line arguments
 
-- naming convention in both C and Rust is sanke_case
+- ABI (application binary interface)
+
+- naming convention in C, Rust, and C++ is mostly sanke_case
 
 - screaming snake case -> SCREAMING_SNAKE_CASE
 - screaming snake case is used in both C and Rust for naming constants
