@@ -30,6 +30,13 @@ command-line arguments
 - screaming snake case -> SCREAMING_SNAKE_CASE
 - screaming snake case is used in both C and Rust for naming constants
 
+- object refers to a storage in memory in which values can be stored.
+- names of identifiers can be assigned to objects
+- the name or identifier bound (bind) to an object is called variable
+- values can be assigned to identifiers (names or variables) which altogether produces a variable  
+
+- keyword (reserved identifier or reserved word)
+
 - compiling and running are separate in both C and Rust
 
 - When a single operation takes multiple steps, we say the operation is not atomic
