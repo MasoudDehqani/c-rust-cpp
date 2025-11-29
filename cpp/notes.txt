@@ -1,1 +1,5 @@
-init
+- object refers to a storage in memory in which values can be stored.
+- when we assign a name to the memory location we call it a variable
+- names of identifiers can be assigned to objects
+- the name or identifier bound (bind) to an object is called variable
+- values can be assigned to identifiers (names or variables) which altogether produces a variable  

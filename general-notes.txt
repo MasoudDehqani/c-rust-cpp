@@ -29,6 +29,8 @@ command-line arguments
 
 - screaming snake case -> SCREAMING_SNAKE_CASE
 - screaming snake case is used in both C and Rust for naming constants
+- for the sake of best practices, naming in C and C++ should avoid using _ or __ for the beginning of the name as this is the convention for
+system level (implementation) naming
 
 - object refers to a storage in memory in which values can be stored.
 - names of identifiers can be assigned to objects
@@ -36,6 +38,9 @@ command-line arguments
 - values can be assigned to identifiers (names or variables) which altogether produces a variable  
 
 - keyword (reserved identifier or reserved word)
+
+- re-binding (re-assigning) VS shadowing VS mutating of variables
+- transformation
 
 - compiling and running are separate in both C and Rust
 
