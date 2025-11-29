@@ -38,6 +38,15 @@ command-line arguments
 - screaming snake case -> SCREAMING_SNAKE_CASE
 - screaming snake case is used in both C and Rust for naming constants
 
+- variables are simply names that point to a memory location
+- declaration: announcing the properties of the variable to the compiler
+
+properties of a variable:
+- size of the variable (type of the variable)
+- name of the variable
+
+- most of the time declaration and the definition will be done at the same time
+
 - compiling and running are separate in both C and Rust
 
 - declarations of functions VS actual definitions of functions
@@ -72,3 +81,7 @@ sizeof(short int) <= sizeof(int) <= sizeof(long int)
 
 - for the sake of best practices, naming in C and C++ should avoid using _ or __ for the beginning of the name as this is the convention for
 system level (implementation) naming
+
+- int -> 2 bytes or 4 bytes -> depending on machine
+
+- assigning a value to a variable at the time of definition is called initialization

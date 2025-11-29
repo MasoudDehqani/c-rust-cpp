@@ -32,10 +32,13 @@ command-line arguments
 - for the sake of best practices, naming in C and C++ should avoid using _ or __ for the beginning of the name as this is the convention for
 system level (implementation) naming
 
+- declaration - definition - initialization - statement - prototype
+
 - object refers to a storage in memory in which values can be stored.
 - names of identifiers can be assigned to objects
 - the name or identifier bound (bind) to an object is called variable
 - values can be assigned to identifiers (names or variables) which altogether produces a variable  
+- variable: a named location in memory where data can be stroed
 
 - keyword (reserved identifier or reserved word)
 
@@ -49,6 +52,7 @@ system level (implementation) naming
 - C can integrate assembly language code into its codes. It is possible to write assembly code in C code
 - Rust can integrate C codes into its codes
 
+- definition of a variable more than once is illegal in C and C++ but in Rust the shadowing occurs
 - These are possible in C, but not in Rust:
 int var1, var2, var3;
 var1 = var2 = var3 = 10;
