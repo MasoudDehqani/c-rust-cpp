@@ -7,3 +7,23 @@ const dataType CONSTANT_NAME; -> recommended
 dataType const CONSTANT_NAME;
 
 - constant variables must be initialized;
+
+macros:
+- object-like macros
+- function-like macros
+- more...
+
+- A macro is a name which preprocessor replaces with a value or a code before compilation
+- preprocessor replaces a macro with the actual definition
+
+#include
+#define
+
+- macros are disregarded in modern C++
+- macros -> global scope -> entire program
+- macros are handled by the preprocessor, not the compiler
+- hard to debug
+
+alternatives:
+- inline functions
+- constant variables
