@@ -1,0 +1,20 @@
+- declaration - definition - initialization - statement - prototype - assignment
+
+- object refers to a storage in memory in which values can be stored.
+- names of identifiers can be assigned to objects
+- the name or identifier bound (bind) to an object is called variable
+- values can be assigned to identifiers (names or variables) which altogether produces a variable  
+- variable: a named location in memory where data can be stroed
+
+- for the sake of best practices, naming in C and C++ should avoid using _ or __ for the beginning of the name as this is the convention for
+system level (implementation) naming
+
+- garbage value
+
+- fundamental types - complex types
+
+- rhs -> right hand side
+- lhs -> left hand side
+- lvalue - rvalue
+
+- narrowing conversion

@@ -1,4 +1,4 @@
-- declaration - definition - initialization - statement - prototype
+- declaration - definition - initialization - statement - prototype - assignment
 
 - object refers to a storage in memory in which values can be stored.
 - names of identifiers can be assigned to objects
@@ -24,3 +24,20 @@ it here. we are going to only use it here.
 
 - for the sake of best practices, naming in C and C++ should avoid using _ or __ for the beginning of the name as this is the convention for
 system level (implementation) naming
+
+- garbage value
+
+- fundamental types - complex types
+
+- default initialization - copy initialization - direct initialization - list initialization - value initialization
+
+- list initialization -> modern -> does not allow narrowing initialization
+
+- copy initialization
+- rhs -> right hand side
+- lhs -> left hand side
+- lvalue - rvalue
+
+- narrowing conversion
+
+int age = 30.5; -> no compile error -> narrowing conversion

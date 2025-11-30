@@ -1,0 +1,9 @@
+named constants
+literal constants
+
+named constants -> constant variables - macros - enumerated constants
+
+const dataType CONSTANT_NAME; -> recommended
+dataType const CONSTANT_NAME;
+
+- constant variables must be initialized;
