@@ -67,6 +67,12 @@ let x = 2;
 
 - exponential form or scientific notation -> 5.2e5 -> 5.2 * (10**5)
 
+- positional weight
+
+- calculating the range of types like float and double -> is in the scope of computer organization and architecture
+- IEEE754 standard
+- floating point number is a CS concept not a mathematical concept
+
 - decimal number system -> base 10 number system
 example:
 568 -> 5 * (10**2) + 6 * (10**1) + 8 * (10**0)
