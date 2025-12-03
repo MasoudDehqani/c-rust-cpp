@@ -1,0 +1,11 @@
+- iostream -> header file
+- iostream -> library
+
+- header file -> a file with declaration of tools (libraries)
+#include<iostream> -> tell the preprocessor to include the iostream header file so that the compiler does not produce error
+
+- std::cout -> standard character output -> sequence of characters to output
+- << -> insertion operator -> insert the value of right hand side to the left hand side
+- std::cout -> represent the console window
+
+- >> -> extraction operator

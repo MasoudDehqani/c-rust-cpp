@@ -63,6 +63,11 @@
     - compile with optimization
 */
 
+use std::io::stdin;
+
 fn main() {
+    let mut user_input = String::new();
+    stdin().read_line(&mut user_input).unwrap();
     println!("Hello, world!");
+    println!("{}", user_input);
 }

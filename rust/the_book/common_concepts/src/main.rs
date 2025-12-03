@@ -1,8 +1,7 @@
 /*
     Variables and Mutability
 
-    - values (variable) which are bind to a name or identifier are
-    by default immutable in Rust
+    - values (variable) which are bind to a name or identifier are by default immutable in Rust
     - immutability contributes to safety and easy concurrency that Rust provides
 
     - by using 'mut' keyword in variable definition, readers of the code

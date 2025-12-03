@@ -1,0 +1,53 @@
+Fundamental data types:
+- int
+- char
+- bool
+- float
+- double
+- void
+
+User-defined data types:
+- class
+- enum
+- struct
+- union
+
+Derived data types:
+- arrays
+- pointers
+- references
+- functions
+
+type specifiers for int:
+- short int
+- int
+- long int
+- long long int
+- unsigned short int
+- unsigned int
+- unsigned long int
+
+data types conversion:
+- implicit
+- explicit
+
+- Data types in an expression must be consistent for the compiler to be able to compile
+- automatic (implicit) type conversion will be done by the compiler to make all types consistent and same
+- lower data type to higher data type to avoid data loss
+
+- lower VS higher data types -> size/range - precision
+- type peomotion hierarchy
+
+explicit type conversion:
+- named casts
+- cast notation
+- function notation
+
+- cast notation and function notation type conversion is discouraged in modern C++ dut to lack of safety and readability
+
+- auto type specifier -> introduced in C++11 -> deducing the type by compiler based on initializer -> like type inference in other languages
+- auto type specifier is used quite frequently in STL and templates
+
+- decltype type specifier -> introduced in C++11
+- decltype type specifier is used quite frequently in STL and templates -> generally for complex types
+
