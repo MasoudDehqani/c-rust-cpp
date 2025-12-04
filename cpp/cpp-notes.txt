@@ -35,3 +35,10 @@ system level (implementation) naming
 - naming conflict
 - namespace -> a container which allow grouping identifiers (variables, funcitons, classes, etc.) under a unique name to avoid
 naming conflict
+
+- integral value
+- integral constant
+- switch label
+
+- fallthrough behavior
+- [[fallthrough]] attribute -> C++17

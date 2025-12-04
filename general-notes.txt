@@ -144,3 +144,10 @@ Expressions in Rust categorized as:
 * historically place expressions were called lvalues and value expressions were called rvalues
 * there is also a third minor category called assignee expressions
 https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions
+
+- fat pointer VS thin pointer
+A thin pointer is a single memory address, while a fat pointer is a pointer to an address plus some metadata
+
+- associativity of operators
+
+- raw pointer VS smart pointers VS references
