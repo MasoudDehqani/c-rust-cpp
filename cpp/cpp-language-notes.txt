@@ -21,3 +21,11 @@ system level (implementation) naming
 
 - header file -> a file with declaration of tools (libraries)
 #include<iostream> -> tell the preprocessor to include the iostream header file so that the compiler does not produce error
+
+- division by 0 gives runtime error
+- division by 0.0 gives inf or NaN if the system follows IEEE754 standard
+
+- implementation-defined behavior
+
+- compound assignment operators
+- all assignment operators return assigned value
