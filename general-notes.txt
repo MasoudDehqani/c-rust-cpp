@@ -137,3 +137,10 @@ in this example we imagine that the value -129 would not be set at compiler time
 the overflow occurs. Note that this would be the case if the value which is to be stored in the value with the specified type
 is not known at compile time. If for example you want to explicitly assign value 128 to a variable with u8 type, the compiler rejects
 this, but in C, on the other hand, this would result in a warning (at least in gcc compiler as I tested it)
+
+Expressions in Rust categorized as:
+- place expressions -> may occur either in place context or value context
+- value expressions -> may occur either in place context or value context
+* historically place expressions were called lvalues and value expressions were called rvalues
+* there is also a third minor category called assignee expressions
+https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions

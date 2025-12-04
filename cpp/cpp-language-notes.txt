@@ -29,3 +29,9 @@ system level (implementation) naming
 
 - compound assignment operators
 - all assignment operators return assigned value
+
+- linker is a software program whose job is to combine object files obtained from compiler into a single executable file
+- linker error
+- naming conflict
+- namespace -> a container which allow grouping identifiers (variables, funcitons, classes, etc.) under a unique name to avoid
+naming conflict
