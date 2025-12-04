@@ -1,0 +1,14 @@
+- building VS compiling
+
+Expressions in Rust categorized as:
+- place expressions -> may occur either in place context or value context
+- value expressions -> may occur either in place context or value context
+* historically place expressions were called lvalues and value expressions were called rvalues
+* there is also a third minor category called assignee expressions
+https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions
+
+- static has a single memory location. You can take a reference of it. So it behaves as a standard variable. const exists only as
+a value. It can be copied or inlined in places where it is used by the compiler
+
+const does not define a variable with a value stored at a "place", it defines a value. See:
+https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions
