@@ -42,3 +42,28 @@ naming conflict
 
 - fallthrough behavior
 - [[fallthrough]] attribute -> C++17
+
+- dereference operator (indirection operator)
+
+- reference -> alias
+
+- a reference cannot be changed once initialized
+- re-assigning a reference with a new value, does not change what the reference refers to, it changes the value it refers to
+
+- call by value
+- call by reference using pointers
+- call by reference using references
+
+- same category type
+
+- function overload resolution:
+1. exact match
+2. type promotion
+3. type conversion
+4. user-defined type conversion
+5. ellipsis conversion
+
+- #include <string>
+
+- It is best practice to always write the prototypes of functions in header files. But we may choose to define small functinos, it
+is better to define those functions as inline to avoid liker error

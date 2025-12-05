@@ -33,6 +33,9 @@
 - In C the main function mostly does not take any parameters. But it can take argc and argv as parametes whose valus are provided at runtime by
 command-line arguments
 
+- header files VS C standard library -> compiler only compile the source code which is expanded by preprocessor with header files which itself
+included only declarations or prototypes, then linker maps the declarations with the actual definitions. It helps to reduce the compile time
+
 - naming convention in both C and Rust is sanke_case
 
 - screaming snake case -> SCREAMING_SNAKE_CASE
