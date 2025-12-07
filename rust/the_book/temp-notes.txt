@@ -1,4 +1,4 @@
-- What consume an interator
+- What consumes an iterator
 map method
 for loop
 

@@ -156,3 +156,11 @@ A thin pointer is a single memory address, while a fat pointer is a pointer to a
 
 - character encoding schemes
 - ASCII
+- extended ASCII
+
+- floating point VS fixed point -> fixed-point uses a set number of bits for integers and fractions (fixed precision/range), ideal for currency or
+embedded systems needing speed/predictability, while floating-point dynamically shifts the decimal point (mantissa + exponent), offering a vast
+range but with varying precision, perfect for science/graphics where huge scales are needed. 
+- decimal places after decimal point
+
+- fractional numbers (real numbers)
