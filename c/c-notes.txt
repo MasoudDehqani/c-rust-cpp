@@ -88,3 +88,7 @@ system level (implementation) naming
 - int -> 2 bytes or 4 bytes -> depending on machine
 
 - assigning a value to a variable at the time of definition is called initialization
+
+- sizeof is a unary operator, not a function
+
+- symbolic constatnts

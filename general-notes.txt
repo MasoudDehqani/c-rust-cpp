@@ -68,6 +68,7 @@ let x = 2;
 - exponential form or scientific notation -> 5.2e5 -> 5.2 * (10**5)
 
 - positional weight
+- place value
 
 - calculating the range of types like float and double -> is in the scope of computer organization and architecture
 - IEEE754 standard
@@ -77,6 +78,7 @@ let x = 2;
 example:
 568 -> 5 * (10**2) + 6 * (10**1) + 8 * (10**0)
 
+- bit -> portmanteau of binary digit
 - binary number system -> base 2 number system
 example:
 1001 -> 1 * (2**3) + 0 * (2**2) + 0 * (2**1) + 1 * (2**0)
@@ -151,3 +153,6 @@ A thin pointer is a single memory address, while a fat pointer is a pointer to a
 - associativity of operators
 
 - raw pointer VS smart pointers VS references
+
+- character encoding schemes
+- ASCII

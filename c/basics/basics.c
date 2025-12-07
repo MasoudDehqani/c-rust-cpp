@@ -30,6 +30,7 @@ int main()
 
   printf("size of long int: %ld bytes\n", sizeof(long int));
   printf("size of long long int: %ld bytes\n", sizeof(long long int));
+  printf("size of int is: %d\n", sizeof(int));
   return 0;
 }
 
