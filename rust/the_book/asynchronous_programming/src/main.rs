@@ -1,15 +1,15 @@
+use asynchronous_programming::get_page_title;
 #[allow(unused_imports)]
-use asynchronous_programming::{
-    counter_with_task, get_one_title_and_print, race_between_two_title,
-};
-use tokio::{self};
+use tokio::runtime::Runtime;
 
-#[tokio::main]
-async fn main() {
-    race_between_two_title().await;
+fn main() {
+    let args = std::env::args().collect::<Vec<String>>();
+    let runtime = Runtime::new().unwrap();
+    runtime.block_on(async {
+        let url = &args[1];
+        match get_page_title(url).await {
+            Some(title) => println!("Title is: {}", title),
+            None => println!("No Title"),
+        }
+    });
 }
-
-// fn main() {
-//     get_one_title_and_print();
-//     counter_with_task();
-// }
