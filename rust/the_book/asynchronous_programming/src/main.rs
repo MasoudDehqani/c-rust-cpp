@@ -17,28 +17,133 @@ use tokio::{
     task::{spawn, yield_now},
     time::{Duration, Instant, sleep},
 };
+use tokio_stream::{
+    Stream, StreamExt, iter as stream_from_iter, wrappers::UnboundedReceiverStream,
+};
 
-#[tokio::main]
-async fn main() {
-    let slow = async {
-        sleep(Duration::from_secs(5)).await;
-        "slow finished"
-    };
+fn main() {
+    let runtime = Runtime::new().unwrap();
+    runtime.block_on(async {
+        let mut messages = pin!(get_messages().timeout(Duration::from_millis(200)));
 
-    match timeout(slow, Duration::from_secs(2)).await {
-        Ok(res) => println!("done with {res}"),
-        Err(s) => println!("failed to be done in {} secs", s.as_secs_f32()),
-    }
+        while let Some(result) = messages.next().await {
+            match result {
+                Ok(msg) => println!("Message: {msg}"),
+                Err(reason) => println!("Problem: {reason}"),
+            }
+        }
+    })
 }
 
-async fn timeout<F: Future>(fut: F, max_time: Duration) -> Result<F::Output, Duration> {
-    let res = race(fut, sleep(max_time)).await;
+fn get_messages() -> impl Stream<Item = String> {
+    let (tx, rx) = unbounded_channel();
 
-    match res {
-        Either::Left(a) => Ok(a),
-        Either::Right(_) => Err(max_time),
-    }
+    spawn(async move {
+        let messages = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+        for (index, message) in messages.into_iter().enumerate() {
+            let time_to_sleep = if index % 2 == 0 { 100 } else { 300 };
+            sleep(Duration::from_millis(time_to_sleep)).await;
+
+            tx.send(format!("Message: {message}")).unwrap();
+        }
+    });
+
+    UnboundedReceiverStream::new(rx)
 }
+
+// fn main() {
+//     let runtime = Runtime::new().unwrap();
+//     runtime.block_on(async {
+//         let mut messages = pin!(get_messages().timeout(Duration::from_millis(200)));
+
+//         while let Some(result) = messages.next().await {
+//             match result {
+//                 Ok(msg) => println!("Message: {msg}"),
+//                 Err(reason) => println!("Problem: {reason}"),
+//             }
+//         }
+//     })
+// }
+
+// fn get_messages() -> impl Stream<Item = String> {
+//     let messages = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+//     let (tx, rx) = unbounded_channel();
+
+//     for message in messages {
+//         tx.send(format!("Message: {message}")).unwrap()
+//     }
+
+//     UnboundedReceiverStream::new(rx)
+// }
+
+// fn main() {
+//     let runtime = Runtime::new().unwrap();
+//     runtime.block_on(async {
+//         let mut messages = get_messages();
+
+//         while let Some(msg) = messages.next().await {
+//             println!("Message: {msg}");
+//         }
+//     })
+// }
+
+// fn get_messages() -> impl Stream<Item = String> {
+//     let messages = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+//     let (tx, rx) = unbounded_channel();
+
+//     for message in messages {
+//         tx.send(format!("Message: {message}")).unwrap()
+//     }
+
+//     UnboundedReceiverStream::new(rx)
+// }
+
+// fn main() {
+//     let runtime = Runtime::new().unwrap();
+//     runtime.block_on(async {
+//         let values = 0..101;
+//         let stream = stream_from_iter(values);
+
+//         let mut filtered = stream.filter(|v| v % 3 == 0 || v % 5 == 0);
+
+//         while let Some(value) = filtered.next().await {
+//             println!("value: {value}");
+//         }
+//     })
+// }
+
+// #[tokio::main]
+// async fn main() {
+//     let values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+//     let iter = values.iter().map(|v| v * 2);
+//     let mut stream = stream_from_iter(iter);
+
+//     while let Some(msg) = stream.next().await {
+//         println!("value: {}", msg)
+//     }
+// }
+
+// #[tokio::main]
+// async fn main() {
+//     let slow = async {
+//         sleep(Duration::from_secs(5)).await;
+//         "slow finished"
+//     };
+
+//     match timeout(slow, Duration::from_secs(2)).await {
+//         Ok(res) => println!("done with {res}"),
+//         Err(s) => println!("failed to be done in {} secs", s.as_secs_f32()),
+//     }
+// }
+
+// async fn timeout<F: Future>(fut: F, max_time: Duration) -> Result<F::Output, Duration> {
+//     let res = race(fut, sleep(max_time)).await;
+
+//     match res {
+//         Either::Left(a) => Ok(a),
+//         Either::Right(_) => Err(max_time),
+//     }
+// }
 
 /*
   This is a form of cooperative multitasking.

@@ -312,3 +312,5 @@ This is a fundamental tradeoff: we can either deal with a dynamic number of futu
 This is a form of cooperative multitasking, where each future has the power to determine when it hands over control via await points. Each future therefore also has the responsibility to avoid blocking for too long. In some Rust-based embedded operating systems, this is the only kind of multitasking!
 
 - overall performance
+
+- A stream is like an asynchronous form of iteration
