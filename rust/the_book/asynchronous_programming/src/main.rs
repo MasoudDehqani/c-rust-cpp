@@ -14,42 +14,100 @@ use futures::{
 use tokio::{
     runtime::Runtime,
     sync::mpsc::unbounded_channel,
-    task::{spawn, yield_now},
+    task::{
+        // spawn,
+        spawn as spawn_task,
+        yield_now,
+    },
     time::{Duration, Instant, sleep},
 };
 use tokio_stream::{
     Stream, StreamExt, iter as stream_from_iter, wrappers::UnboundedReceiverStream,
 };
 
-fn main() {
-    let runtime = Runtime::new().unwrap();
-    runtime.block_on(async {
-        let mut messages = pin!(get_messages().timeout(Duration::from_millis(200)));
+#[tokio::main]
+async fn main() {
+    let messages = get_messages().timeout(Duration::from_millis(200));
+    let intervals = get_intervals()
+        .map(|i| format!("Interval: {i}"))
+        .throttle(Duration::from_millis(500))
+        .timeout(Duration::from_millis(800));
 
-        while let Some(result) = messages.next().await {
-            match result {
-                Ok(msg) => println!("Message: {msg}"),
-                Err(reason) => println!("Problem: {reason}"),
-            }
+    let merged = messages.merge(intervals).take(20);
+    let mut stream = pin!(merged);
+
+    while let Some(result) = stream.next().await {
+        match result {
+            Ok(msg) => println!("{}", msg),
+            Err(e) => println!("{}", e),
         }
-    })
+    }
 }
 
 fn get_messages() -> impl Stream<Item = String> {
     let (tx, rx) = unbounded_channel();
-
-    spawn(async move {
-        let messages = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+    spawn_task(async move {
+        let messages = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
         for (index, message) in messages.into_iter().enumerate() {
             let time_to_sleep = if index % 2 == 0 { 100 } else { 300 };
             sleep(Duration::from_millis(time_to_sleep)).await;
 
-            tx.send(format!("Message: {message}")).unwrap();
+            if let Err(e) = tx.send(format!("Message: {message}")) {
+                eprintln!("Error sending message through channel: {}", e)
+            }
         }
     });
 
     UnboundedReceiverStream::new(rx)
 }
+
+fn get_intervals() -> impl Stream<Item = i32> {
+    let (tx, rx) = unbounded_channel();
+
+    spawn_task(async move {
+        let mut count = 0;
+        loop {
+            sleep(Duration::from_millis(1)).await;
+            count += 1;
+
+            if let Err(e) = tx.send(count) {
+                eprintln!("Error sending count over channel: {}", e)
+            }
+        }
+    });
+
+    UnboundedReceiverStream::new(rx)
+}
+
+// fn main() {
+//     let runtime = Runtime::new().unwrap();
+//     runtime.block_on(async {
+//         let mut messages = pin!(get_messages().timeout(Duration::from_millis(200)));
+
+//         while let Some(result) = messages.next().await {
+//             match result {
+//                 Ok(msg) => println!("Message: {msg}"),
+//                 Err(reason) => println!("Problem: {reason}"),
+//             }
+//         }
+//     })
+// }
+
+// fn get_messages() -> impl Stream<Item = String> {
+//     let (tx, rx) = unbounded_channel();
+
+//     spawn(async move {
+//         let messages = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+//         for (index, message) in messages.into_iter().enumerate() {
+//             let time_to_sleep = if index % 2 == 0 { 100 } else { 300 };
+//             sleep(Duration::from_millis(time_to_sleep)).await;
+
+//             tx.send(format!("Message: {message}")).unwrap();
+//         }
+//     });
+
+//     UnboundedReceiverStream::new(rx)
+// }
 
 // fn main() {
 //     let runtime = Runtime::new().unwrap();
