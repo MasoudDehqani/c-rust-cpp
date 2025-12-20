@@ -1,0 +1,22 @@
+virtual dispatch - dynamic dispatch - static dispatch
+type erasure
+virtual calls
+full inlining
+compile type optimization across layers
+iterators are lazy streams
+terminal operation
+pipelines of state machines
+adapter
+
+iterator struct
+no mutation
+
+execution model
+layers are not container, they are behavior
+each iterator adapter is a state machine with logic, not storage
+nothing is extracted, it is constructed
+consumer
+the type collapse is not unwrapping. it is execution
+Iterator adapters compose behavior.
+Iterator consumers execute behavior.
+a chain of functions waiting to run
