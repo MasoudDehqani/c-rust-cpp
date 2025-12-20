@@ -1,3 +1,9 @@
+No inheritance.
+No virtual dispatch.
+No magic.
+
+ugly types, fast code
+
 virtual dispatch - dynamic dispatch - static dispatch
 type erasure
 virtual calls
