@@ -1,11 +1,20 @@
 fn main() {
     let opt = Some(String::from("hello"));
-    let opt_ref = opt.as_ref();
 
-    let len = match opt_ref {
+    let len = match &opt {
         Some(s) => s.len(),
         None => 0,
     };
+
+    // let len = match opt {
+    //     Some(ref s) => s.len(),
+    //     None => 0,
+    // };
+
+    // let len = match opt.as_ref() {
+    //     Some(s) => s.len(),
+    //     None => 0,
+    // };
 
     println!("{:?}", opt);
     println!("{}", len)
