@@ -15,6 +15,8 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(4);
 
+    // We can apply this change as a showcase for graceful shutdown working properly
+    // for stream in listener.incoming().take(6) {
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
